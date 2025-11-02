@@ -10,11 +10,27 @@ let vertexMap: VertexRecord<string, string> = {
         question: "How old are you?",
         answer: null,
         answerPool: []
+    },
+    "name": {
+        label: "Name Information",
+        question: "What is your name?",
+        answer: null,
+        answerPool: []
     }
 };
-let edgeMap: EdgeRecord<string, string> = {};
+let edgeMap: EdgeRecord<string, string> = {
+    "start": [{
+        dst: "name",
+        condition: null
+    }]
+};
 
 const formhandler = new FormHandlerModel<string, string>(vertexMap, edgeMap, "start");
+
+let cur_vertex_ref = ref(formhandler.getCurrentVertex());
+
+console.log(cur_vertex_ref);
+console.log(cur_vertex_ref.value);
 
 const finishFlag = ref(false)
 
@@ -23,8 +39,12 @@ function clickHandler(){
     if(cur_vertex != null){
         let htmlElement: HTMLInputElement = document.getElementById("answer") as HTMLInputElement;
         cur_vertex.answer = htmlElement.value;
-        if(formhandler.next() == null){
+        let vertex = formhandler.next();
+        if( vertex == null){
             finishFlag.value = true;
+        }else{
+            htmlElement.value = "";
+            cur_vertex_ref.value = vertex;
         }
     }
 }
@@ -42,9 +62,9 @@ function submitForm(){
         </div>
         <div v-else>
             <div>
-                <h3>{{ formhandler.getCurrentVertex()?.label }}</h3>
-                <label>{{ formhandler.getCurrentVertex()?.question }}</label><br/>
-                <input id="answer" type="text" :placeholder="formhandler.getCurrentVertex()?.question" />
+                <h3>{{ cur_vertex_ref?.label }}</h3>
+                <label>{{ cur_vertex_ref?.question }}</label><br/>
+                <input id="answer" type="text" :placeholder="cur_vertex_ref?.question" />
             </div>
             <div>
                 <button @click="clickHandler">Next</button>
