@@ -11,6 +11,15 @@ let vertexMap: VertexRecord<string, string> = {
         answer: null,
         answerPool: []
     },
+    "parentConsent":{
+        label: "Parent Consent",
+        question: "Do you have Parental Consent?",
+        answer: null,
+        answerPool:[
+            "Yes",
+            "No"
+        ]
+    },
     "name": {
         label: "Name Information",
         question: "What is your name?",
@@ -19,10 +28,19 @@ let vertexMap: VertexRecord<string, string> = {
     }
 };
 let edgeMap: EdgeRecord<string, string> = {
-    "start": [{
-        dst: "name",
-        condition: null
-    }]
+    "start": [
+        {
+            dst: "parentConsent",
+            condition: (x) =>{
+                let numx = Number.parseInt(x);
+                return numx < 18;
+            }
+        },
+        {
+            dst: "name",
+            condition: null
+        }
+    ]
 };
 
 const formhandler = new FormHandlerModel<string, string>(vertexMap, edgeMap, "start");
@@ -64,7 +82,14 @@ function submitForm(){
             <div>
                 <h3>{{ cur_vertex_ref?.label }}</h3>
                 <label>{{ cur_vertex_ref?.question }}</label><br/>
-                <input id="answer" type="text" :placeholder="cur_vertex_ref?.question" />
+                <div v-if="cur_vertex_ref?.answerPool.length == 0">
+                    <input id="answer" type="text" :placeholder="cur_vertex_ref?.question" />
+                </div>
+                <div v-else>
+                    <select id="answer" name="answer">
+                        <option v-for="item in cur_vertex_ref?.answerPool" :value="item">{{ item }}</option>
+                    </select>
+                </div>
             </div>
             <div>
                 <button @click="clickHandler">Next</button>
