@@ -4,6 +4,7 @@ import { nullable } from "./type_utils";
 export interface vertex<I, T>{
     id? : I;
     label: string;
+    tags: string[]; // This is like an internal label set for categorizing
     question: string;
     answer: nullable<T>;
     answerPool: T[];
@@ -15,12 +16,14 @@ export class Vertex<I,T> implements vertex<I,T>{
     label: string;
     question: string;
     answer: nullable<T>;
+    tags: string[];
     answerPool: T[];
-    constructor(label: string, question: string, answer: nullable<T> = null, answerPool: T[] = [], id?: I){
+    constructor(label: string, question: string, answer: nullable<T> = null, answerPool: T[] = [], tags: string[] = [], id?: I){
         this.label = label;
         this.question = question;
         this.answer = answer;
         this.answerPool = answerPool;
+        this.tags = tags;
         if(id){
             this.id = id;
         }
